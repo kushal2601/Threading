@@ -2,10 +2,13 @@
 using System.Threading;
 using System.Diagnostics;
 
-void Download(){
-    Console.WriteLine("Download started");
+static void Download(object? fileName){
+    if (fileName == null)return;
+
+    string bookName = (string) fileName;
+    Console.WriteLine($"Downloading {bookName} ");
     Thread.Sleep(1000);
-    Console.WriteLine("Download finished");
+    Console.WriteLine($"{bookName} Downloaded");
 }
 
 var thread1 = new Thread(Download);
@@ -13,8 +16,8 @@ var thread2 = new Thread(Download);
 
 var watch =  Stopwatch.StartNew();
 
-thread1.Start();
-thread2.Start();
+thread1.Start("git scm book.pdf");
+thread2.Start("C++ by Walter Savitch.pdf");
 
 thread1.Join();
 thread2.Join();
