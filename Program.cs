@@ -3,33 +3,32 @@ using System.Threading;
 using System.Diagnostics;
 
 /*
-There are 2 types of Threads :-
-    1. Background threads
-    2. Foreground threads
+--------------------------------THREAD POOL-------------------------------------------------------------
+Even though we are allowed to create as many threads as we want , we should be aware of the after-affects
+of it .
+The threads that are created by us are called user-threads ,which has to manages by the developer at the
+application level itself or else it will increse the load on the core which in turn reduces the performance
 
-Foreground threads keep the application running while the Background threads doesn't 
-which means if there is a background thread which is running even after all the foreground threads finish
-that background thread automatically terminates. 
+Hence , management of threads is really important which is done efficiently by the ThreadPool class
+provided the .NET framwork.
 
-NOTE :- main thread is a foreground thread
+NOTE : All the tasks that are queued to the Thread Pool will be assigned to some threads called 
+worker threads and all worker threads are backgournd threads.
 */
-static void Download()
+static void Download(string bookName)
 {
-    for (int i = 0; i < 10 ; i++){
-        Console.WriteLine("Background thread is running....");
-        Thread.Sleep(100);
-    }
+    Console.WriteLine($"Downloading: {bookName}");
+    Thread.Sleep(1000);
+    Console.WriteLine($"Downloaded : {bookName}");
 }
-var backgroundThread = new Thread(Download);
-
-// to make the thread a background thread
-backgroundThread.IsBackground = true;
-
-backgroundThread.Start();
-
-for (int i = 0; i < 2; i++)
+List<string> bookList = new List<string>()
 {
-    Console.WriteLine("Main thread is running...");
-    Thread.Sleep(100);
-}
+    "C++ by Walter Savitch",
+    "git scm book",
+    "Fundamentals of OOPs",
+};
 
+// all of these will be assigned to a background thread
+bookList.ForEach(book => ThreadPool.QueueUserWorkItem((state ) => Download(book)));
+
+Console.WriteLine("Main thread is running....");
