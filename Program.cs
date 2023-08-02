@@ -3,32 +3,29 @@ using System.Threading;
 using System.Diagnostics;
 
 /*
---------------------------------THREAD POOL-------------------------------------------------------------
-Even though we are allowed to create as many threads as we want , we should be aware of the after-affects
-of it .
-The threads that are created by us are called user-threads ,which has to manages by the developer at the
-application level itself or else it will increse the load on the core which in turn reduces the performance
+--------------------------------Task -------------------------------------------------------------
+Task is nothing but an feature provided by the .NET framework which allows the ThradPool to manage all the 
+tasks without us doing it explicitly 
 
-Hence , management of threads is really important which is done efficiently by the ThreadPool class
-provided the .NET framwork.
-
-NOTE : All the tasks that are queued to the Thread Pool will be assigned to some threads called 
-worker threads and all worker threads are backgournd threads.
+Efficient way of creating threads where ThreadPool manages the threads efficiently
 */
-static void Download(string bookName)
+
+static void Download(string fileName)
 {
-    Console.WriteLine($"Downloading: {bookName}");
+    WriteLine("Downloading " + fileName);
     Thread.Sleep(1000);
-    Console.WriteLine($"Downloaded : {bookName}");
+    WriteLine("Downloaded " + fileName);
 }
-List<string> bookList = new List<string>()
-{
-    "C++ by Walter Savitch",
-    "git scm book",
-    "Fundamentals of OOPs",
-};
+// creating a task and starting the task with a new method called Start()
+var task1 =  new Task(
+    () => Download("C++ by Walter Savitch  ")
+);
+task1.Start();
 
-// all of these will be assigned to a background thread
-bookList.ForEach(book => ThreadPool.QueueUserWorkItem((state ) => Download(book)));
+// creating a task and running using task.Run()
+var task2 = Task.Run(
+    () => Download("git scm book")
+);
 
-Console.WriteLine("Main thread is running....");
+task1.Wait();
+WriteLine("Main thread is running here");
